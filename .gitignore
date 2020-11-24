@@ -15,4 +15,4 @@
 # vendor/
 
 # ignour .env file
-*.env
+.env
