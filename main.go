@@ -44,17 +44,7 @@ func remove(filepath string) {
 	}
 }
 
-func main() {
-	// go executeCronJob()
-	// CaptureScreen()
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file -> ", err)
-		return
-	}
-	folderName := createRepo()
-	log.Println(folderName)
-
+func handleForcecontrol(folderName string) {
 	ctx := context.Background()
 
 	// trap Ctrl+C and call cancel on the context
@@ -75,7 +65,9 @@ func main() {
 		case <-ctx.Done():
 		}
 	}()
+}
 
+func runContinuesly(folderName string) {
 	ticker := time.NewTicker(15 * time.Minute)
 
 	go func() {
@@ -93,4 +85,29 @@ func main() {
 	quit := make(chan bool, 1)
 	// main will continue to wait until there is an entry in quit
 	<-quit
+
+}
+
+func main() {
+	// go executeCronJob()
+	// CaptureScreen()
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file -> ", err)
+		return
+	}
+	folderName := createRepo()
+	log.Println(folderName)
+	handleForcecontrol(folderName)
+	now := time.Now()
+	hour := now.Hour()
+	if hour >= 10 && hour < 18 {
+		fmt.Println("Running..")
+		runContinuesly(folderName)
+	}
+	// else {
+	// 	fmt.Println("sleeping..")
+	// 	log.Println("sleeping for ", time.Hour)
+	// 	// time.Sleep(time.Hour)
+	// }
 }
