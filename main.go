@@ -1,8 +1,11 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -14,16 +17,31 @@ import (
 // }
 
 func createRepo() string {
-	fileInfo, err := os.Stat("storage")
-
+	name := "storage"
+	_, err := os.Stat(name)
+	// if err != nil {
+	// 	log.Println(err)
+	// }
 	if os.IsNotExist(err) {
-		errDir := os.MkdirAll("storage", 0755)
+		errDir := os.MkdirAll(name, 0755)
 		if errDir != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 
 	}
-	return fileInfo.Name()
+	return name
+}
+
+func generateFullFilePath(filepath, filename string) string {
+	return fmt.Sprintf("%s/%s", filepath, filename)
+}
+
+func remove(filepath string) {
+	err := os.Remove(filepath)
+	if err != nil {
+		log.Println("error to remove file/directory")
+		return
+	}
 }
 
 func main() {
@@ -36,7 +54,29 @@ func main() {
 	}
 	folderName := createRepo()
 	log.Println(folderName)
-	ticker := time.NewTicker(1 * time.Minute)
+
+	ctx := context.Background()
+
+	// trap Ctrl+C and call cancel on the context
+	ctx, cancel := context.WithCancel(ctx)
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	defer func() {
+		signal.Stop(c)
+		cancel()
+
+	}()
+	go func() {
+		select {
+		case <-c:
+			cancel()
+			remove(folderName)
+			os.Exit(1)
+		case <-ctx.Done():
+		}
+	}()
+
+	ticker := time.NewTicker(15 * time.Minute)
 
 	go func() {
 		for {
@@ -45,6 +85,7 @@ func main() {
 				//Call the periodic function here.
 				fileName := CaptureScreen()
 				mailsPrepared(folderName, fileName)
+				remove(generateFullFilePath(folderName, fileName))
 			}
 		}
 	}()
