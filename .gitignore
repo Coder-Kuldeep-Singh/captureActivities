@@ -14,5 +14,8 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-# ignour .env file
+# ignoure .env file
 .env
+
+# ignoure go.sum file
+go.sum
