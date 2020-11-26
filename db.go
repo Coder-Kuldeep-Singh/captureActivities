@@ -100,6 +100,6 @@ func execute(db *sql.DB, query string) {
 
 func uploadClick(db *sql.DB, click *ClickedInfos) {
 	log.Println(click)
-	query := fmt.Sprintf("insert into clicks(screenX,screenY,captureCoordinateX,captureCoordinateY,capturedTime,capturedDay,running_application) values(%d,%d,%d,%d,'%s','%s','%s')", click.ResolutionCoordinates.X, click.ResolutionCoordinates.Y, click.ClickedCoordinates.X, click.ClickedCoordinates.Y, click.ClickedTime, click.ClickedDay, click.RunningApplication)
+	query := fmt.Sprintf("insert into clicks(screenX,screenY,captureCoordinateX,captureCoordinateY,capturedTime,capturedDay,running_application,captured_time,captured_year_month,currentdate) values(%d,%d,%d,%d,'%s','%s','%s','%s','%s','%s')", click.ResolutionCoordinates.X, click.ResolutionCoordinates.Y, click.ClickedCoordinates.X, click.ClickedCoordinates.Y, click.ClickedFullTime, click.ClickedDay, click.RunningApplication, click.CapturedTime, click.CapturedYearMonth, click.CapturedCurrentDate)
 	execute(db, query)
 }
