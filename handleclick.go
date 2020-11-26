@@ -11,8 +11,8 @@ import (
 
 // ClickedInfos holds the clicked info
 type ClickedInfos struct {
-	ResolutionCoordinates, ClickedCoordinates   *Coordinates
-	ClickedTime, ClickedDay, RunningApplication string
+	ResolutionCoordinates, ClickedCoordinates                                                             *Coordinates
+	ClickedFullTime, ClickedDay, RunningApplication, CapturedTime, CapturedYearMonth, CapturedCurrentDate string
 }
 
 // Coordinates holds the cord
@@ -40,9 +40,12 @@ func getLMouseClick() *ClickedInfos {
 			X: cx,
 			Y: cy,
 		},
-		ClickedTime:        fmt.Sprintf("%d-%d-%d:%d:%d:%d", click.Day(), click.Month(), click.Year(), click.Hour(), click.Minute(), click.Second()),
-		ClickedDay:         fmt.Sprintf("%s", click.Month().String()),
-		RunningApplication: getUsedProduct(),
+		ClickedFullTime:     fmt.Sprintf("%d-%d-%d:%d:%d:%d", click.Day(), click.Month(), click.Year(), click.Hour(), click.Minute(), click.Second()),
+		ClickedDay:          fmt.Sprintf("%s", click.Month().String()),
+		RunningApplication:  getUsedProduct(),
+		CapturedTime:        fmt.Sprintf("%d:%d:%d", click.Hour(), click.Minute(), click.Second()),
+		CapturedYearMonth:   fmt.Sprintf("%d-%d", click.Month(), click.Year()),
+		CapturedCurrentDate: fmt.Sprintf("%d-%d-%d", click.Day(), click.Month(), click.Year()),
 	}
 }
 
