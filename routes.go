@@ -14,5 +14,6 @@ func SetupRouter() *gin.Engine {
 	router.LoadHTMLGlob("html/*")
 
 	router.GET("/", GetVisual)
+	router.GET("/graphs", Daily)
 	return router
 }
