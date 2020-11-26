@@ -174,7 +174,7 @@ func mailsPrepared(folderName, fileName string) {
 	}
 
 	client.Quit()
-	log.Println(sampleMsg)
+	// log.Println(sampleMsg)
 	log.Print("sent :))")
 
 }
