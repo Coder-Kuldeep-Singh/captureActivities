@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -67,7 +68,7 @@ func handleForcecontrol(folderName string) {
 	}()
 }
 
-func runContinuesly(folderName string) {
+func runContinueslyScreenShots(folderName string) {
 	ticker := time.NewTicker(15 * time.Minute)
 
 	go func() {
@@ -81,12 +82,41 @@ func runContinuesly(folderName string) {
 			}
 		}
 	}()
-
 	quit := make(chan bool, 1)
 	// main will continue to wait until there is an entry in quit
 	<-quit
 
 }
+
+func runContinueslyclicksCapture(db *sql.DB) {
+	ticker := time.NewTicker(1 * time.Second)
+	go func() {
+		for {
+			select {
+			case <-ticker.C:
+				//Call the periodic function here.
+				duration := captureClicks()
+				uploadClick(db, duration)
+				// go getUsedProduct()
+			}
+		}
+	}()
+
+}
+
+// func capturerunningProcess() {
+// 	ticker := time.NewTicker(1 * time.Second)
+// 	go func() {
+// 		for {
+// 			select {
+// 			case <-ticker.C:
+// 				// Call the periodic function here.
+// 				getUsedProduct()
+
+// 			}
+// 		}
+// 	}()
+// }
 
 func main() {
 	// go executeCronJob()
@@ -101,13 +131,19 @@ func main() {
 	handleForcecontrol(folderName)
 	now := time.Now()
 	hour := now.Hour()
+	dbType := "mysql"
+	db := loadEnv().connect(dbType)
 	if hour >= 10 && hour < 18 {
 		fmt.Println("Running..")
-		runContinuesly(folderName)
+		// capturerunningProcess()
+		// getUsedProduct()
+		runContinueslyclicksCapture(db)
+		runContinueslyScreenShots(folderName)
+
+	} else {
+		// fmt.Println("sleeping..")
+		// log.Println("sleeping for ", time.Hour)
+		// time.Sleep(16 + time.Hour)
+		runContinueslyclicksCapture(db)
 	}
-	// else {
-	// 	fmt.Println("sleeping..")
-	// 	log.Println("sleeping for ", time.Hour)
-	// 	// time.Sleep(time.Hour)
-	// }
 }
