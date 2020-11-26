@@ -72,15 +72,15 @@ func setLimits(db *sql.DB) {
 
 // func postInfo()
 
-// func genQuery(db *sql.DB, query string) *sql.Rows {
-// 	res, err := db.Query(query)
-// 	if err != nil {
-// 		fmt.Printf("error to run query %s\n", query)
-// 		fmt.Println(err)
-// 		return nil
-// 	}
-// 	return res
-// }
+func genQuery(db *sql.DB, query string) *sql.Rows {
+	res, err := db.Query(query)
+	if err != nil {
+		fmt.Printf("error to run query %s\n", query)
+		fmt.Println(err)
+		return nil
+	}
+	return res
+}
 
 // func getDatabaseList(db *sql.DB, query string) []string {
 // 	rows := genQuery(db, query)
@@ -102,4 +102,45 @@ func uploadClick(db *sql.DB, click *ClickedInfos) {
 	log.Println(click)
 	query := fmt.Sprintf("insert into clicks(screenX,screenY,captureCoordinateX,captureCoordinateY,capturedTime,capturedDay,running_application,captured_time,captured_year_month,currentdate) values(%d,%d,%d,%d,'%s','%s','%s','%s','%s','%s')", click.ResolutionCoordinates.X, click.ResolutionCoordinates.Y, click.ClickedCoordinates.X, click.ClickedCoordinates.Y, click.ClickedFullTime, click.ClickedDay, click.RunningApplication, click.CapturedTime, click.CapturedYearMonth, click.CapturedCurrentDate)
 	execute(db, query)
+}
+
+// DailyGraph holds the daily clicked and used products
+type DailyGraph struct {
+	Product string
+	Count   int
+}
+
+func getUsedProductPerDay(db *sql.DB) *[]DailyGraph {
+	t := time.Now()
+	day := fmt.Sprintf("%d-%d-%d", t.Day(), t.Month(), t.Year())
+	query := fmt.Sprintf("SELECT distinct(running_application) from clicks where currentdate='%s'", day)
+	rows := genQuery(db, query)
+	daily := []DailyGraph{}
+	for rows.Next() {
+		var values string
+		err := rows.Scan(&values)
+		if err != nil {
+			fmt.Println("error to scan rows.")
+			fmt.Println(err)
+			return nil
+		}
+		daily = append(daily, DailyGraph{
+			Product: values,
+			Count:   getProductUsedCount(db, values, day),
+		})
+	}
+	// log.Println(daily)
+	return &daily
+}
+
+func getProductUsedCount(db *sql.DB, product, daystring string) int {
+	query := fmt.Sprintf("SELECT count(running_application) from clicks where currentdate='%s' and running_application='%s'", daystring, product)
+	row := db.QueryRow(query)
+	var count int
+	err := row.Scan(&count)
+	if err != nil {
+		log.Println("error to scan count row ", err)
+		return 0
+	}
+	return count
 }
