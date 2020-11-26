@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"strings"
 	"time"
 
 	"github.com/go-vgo/robotgo"
@@ -9,8 +11,8 @@ import (
 
 // ClickedInfos holds the clicked info
 type ClickedInfos struct {
-	ResolutionCoordinates, ClickedCoordinates *Coordinates
-	ClickedTime, ClickedDay                   string
+	ResolutionCoordinates, ClickedCoordinates   *Coordinates
+	ClickedTime, ClickedDay, RunningApplication string
 }
 
 // Coordinates holds the cord
@@ -38,8 +40,9 @@ func getLMouseClick() *ClickedInfos {
 			X: cx,
 			Y: cy,
 		},
-		ClickedTime: fmt.Sprintf("%d-%d-%d:%d:%d:%d", click.Day(), click.Month(), click.Year(), click.Hour(), click.Minute(), click.Second()),
-		ClickedDay:  fmt.Sprintf("%s", click.Month().String()),
+		ClickedTime:        fmt.Sprintf("%d-%d-%d:%d:%d:%d", click.Day(), click.Month(), click.Year(), click.Hour(), click.Minute(), click.Second()),
+		ClickedDay:         fmt.Sprintf("%s", click.Month().String()),
+		RunningApplication: getUsedProduct(),
 	}
 }
 
@@ -47,21 +50,14 @@ func captureClicks() *ClickedInfos {
 	return getLMouseClick()
 }
 
-// func getUsedProduct() {
-// 	pid := robotgo.GetPID()
-// 	name, err := robotgo.FindPath(pid)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-
-// 	log.Println(pid)
-// 	log.Println(name)
-// 	// ids, err := robotgo.Pids()
-// 	// if err != nil {
-// 	// 	log.Println(err)
-// 	// }
-// 	// log.Println(ids)
-// }
-
-// log.Println(x, y)
-// }
+func getUsedProduct() string {
+	pid := robotgo.GetPID()
+	name, err := robotgo.FindPath(pid)
+	if err != nil {
+		log.Println(err)
+	}
+	names := strings.Split(name, "/")
+	// log.Println(pid)
+	// log.Println(name)
+	return names[len(names)-1]
+}
