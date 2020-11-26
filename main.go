@@ -69,7 +69,7 @@ func handleForcecontrol(folderName string) {
 }
 
 func runContinueslyScreenShots(folderName string) {
-	ticker := time.NewTicker(15 * time.Minute)
+	ticker := time.NewTicker(1 * time.Minute)
 
 	go func() {
 		for {
@@ -96,6 +96,7 @@ func runContinueslyclicksCapture(db *sql.DB) {
 			case <-ticker.C:
 				//Call the periodic function here.
 				duration := captureClicks()
+				getUsedProduct()
 				uploadClick(db, duration)
 				// go getUsedProduct()
 			}
@@ -144,6 +145,7 @@ func main() {
 		// fmt.Println("sleeping..")
 		// log.Println("sleeping for ", time.Hour)
 		// time.Sleep(16 + time.Hour)
+		log.Println("Capture screen Method are disabled until next office time.")
 		runContinueslyclicksCapture(db)
 	}
 }
