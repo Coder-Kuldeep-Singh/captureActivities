@@ -13,7 +13,7 @@ func SetupRouter() *gin.Engine {
 
 	router.LoadHTMLGlob("html/*")
 
-	router.GET("/", GetVisual)
-	router.GET("/graphs", Daily)
+	router.GET("/days", GetDays)
+	router.GET("/daily", Daily)
 	return router
 }
