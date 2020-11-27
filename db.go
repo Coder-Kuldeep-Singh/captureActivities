@@ -175,3 +175,53 @@ func getUsedProductPerDays(db *sql.DB) *[]DailyGraph {
 	}
 	return &daily
 }
+
+func getUsedProductPerDaysFull(db *sql.DB) *[]DailyGraph {
+	// query := fmt.Sprintf("SELECT distinct(running_application) from clicks where currentdate='%s'", day)
+	query := fmt.Sprintf("SELECT distinct(currentdate) from clicks")
+	rows := genQuery(db, query)
+	daily := []DailyGraph{}
+	for rows.Next() {
+		var values string
+		err := rows.Scan(&values)
+		if err != nil {
+			fmt.Println("error to scan rows.")
+			fmt.Println(err)
+			return nil
+		}
+		if len(values) == 0 {
+			continue
+		}
+
+		query := fmt.Sprintf("SELECT count(running_application) from clicks where currentdate='%s'", values)
+		daily = append(daily, DailyGraph{
+			Count: getProductUsedCount(db, query),
+			Days:  values,
+		})
+	}
+	return &daily
+}
+
+func getUsedProductPerDayFull(db *sql.DB) *[]DailyGraph {
+	t := time.Now()
+	day := fmt.Sprintf("%d-%d-%d", t.Day(), t.Month(), t.Year())
+	query := fmt.Sprintf("SELECT distinct(running_application) from clicks where currentdate='%s'", day)
+	rows := genQuery(db, query)
+	daily := []DailyGraph{}
+	for rows.Next() {
+		var values string
+		err := rows.Scan(&values)
+		if err != nil {
+			fmt.Println("error to scan rows.")
+			fmt.Println(err)
+			return nil
+		}
+		query := fmt.Sprintf("SELECT count(running_application) from clicks where currentdate='%s' and running_application='%s'", day, values)
+		daily = append(daily, DailyGraph{
+			Product: values,
+			Count:   getProductUsedCount(db, query),
+		})
+	}
+	// log.Println(daily)
+	return &daily
+}
