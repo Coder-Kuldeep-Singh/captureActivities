@@ -89,17 +89,17 @@ func genQuery(db *sql.DB, query string) *sql.Rows {
 // }
 
 func execute(db *sql.DB, query string) {
-	exec, err := db.Exec(query)
+	_, err := db.Exec(query)
 	if err != nil {
 		fmt.Printf("error to execute query %s\n", query)
 		fmt.Println(err)
 		return
 	}
-	log.Println(exec.RowsAffected())
+	// log.Println(exec.RowsAffected())
 }
 
 func uploadClick(db *sql.DB, click *ClickedInfos) {
-	log.Println(click)
+	// log.Println(click)
 	query := fmt.Sprintf("insert into clicks(screenX,screenY,captureCoordinateX,captureCoordinateY,capturedTime,capturedDay,running_application,captured_time,captured_year_month,currentdate) values(%d,%d,%d,%d,'%s','%s','%s','%s','%s','%s')", click.ResolutionCoordinates.X, click.ResolutionCoordinates.Y, click.ClickedCoordinates.X, click.ClickedCoordinates.Y, click.ClickedFullTime, click.ClickedDay, click.RunningApplication, click.CapturedTime, click.CapturedYearMonth, click.CapturedCurrentDate)
 	execute(db, query)
 }
@@ -159,12 +159,15 @@ func getUsedProductPerDays(db *sql.DB) *[]DailyGraph {
 			fmt.Println(err)
 			return nil
 		}
+		if len(values) == 0 {
+			continue
+		}
+
 		query := fmt.Sprintf("SELECT count(running_application) from clicks where currentdate='%s'", values)
 		daily = append(daily, DailyGraph{
 			Count: getProductUsedCount(db, query),
 			Days:  values,
 		})
 	}
-	log.Println(daily)
 	return &daily
 }
