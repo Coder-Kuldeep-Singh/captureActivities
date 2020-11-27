@@ -108,6 +108,7 @@ func uploadClick(db *sql.DB, click *ClickedInfos) {
 type DailyGraph struct {
 	Product string
 	Count   int
+	Days    string
 }
 
 func getUsedProductPerDay(db *sql.DB) *[]DailyGraph {
@@ -124,17 +125,17 @@ func getUsedProductPerDay(db *sql.DB) *[]DailyGraph {
 			fmt.Println(err)
 			return nil
 		}
+		query := fmt.Sprintf("SELECT count(running_application) from clicks where currentdate='%s' and running_application='%s'", day, values)
 		daily = append(daily, DailyGraph{
 			Product: values,
-			Count:   getProductUsedCount(db, values, day),
+			Count:   getProductUsedCount(db, query),
 		})
 	}
 	// log.Println(daily)
 	return &daily
 }
 
-func getProductUsedCount(db *sql.DB, product, daystring string) int {
-	query := fmt.Sprintf("SELECT count(running_application) from clicks where currentdate='%s' and running_application='%s'", daystring, product)
+func getProductUsedCount(db *sql.DB, query string) int {
 	row := db.QueryRow(query)
 	var count int
 	err := row.Scan(&count)
@@ -143,4 +144,27 @@ func getProductUsedCount(db *sql.DB, product, daystring string) int {
 		return 0
 	}
 	return count
+}
+
+func getUsedProductPerDays(db *sql.DB) *[]DailyGraph {
+	// query := fmt.Sprintf("SELECT distinct(running_application) from clicks where currentdate='%s'", day)
+	query := fmt.Sprintf("SELECT distinct(currentdate) from clicks")
+	rows := genQuery(db, query)
+	daily := []DailyGraph{}
+	for rows.Next() {
+		var values string
+		err := rows.Scan(&values)
+		if err != nil {
+			fmt.Println("error to scan rows.")
+			fmt.Println(err)
+			return nil
+		}
+		query := fmt.Sprintf("SELECT count(running_application) from clicks where currentdate='%s'", values)
+		daily = append(daily, DailyGraph{
+			Count: getProductUsedCount(db, query),
+			Days:  values,
+		})
+	}
+	log.Println(daily)
+	return &daily
 }
