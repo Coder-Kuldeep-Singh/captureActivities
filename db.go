@@ -114,7 +114,9 @@ type DailyGraph struct {
 func getUsedProductPerDay(db *sql.DB) *[]DailyGraph {
 	t := time.Now()
 	day := fmt.Sprintf("%d-%d-%d", t.Day(), t.Month(), t.Year())
-	query := fmt.Sprintf("SELECT distinct(running_application) from clicks where currentdate='%s'", day)
+	startTime := "10:0:0"
+	endTime := "18:0:0"
+	query := fmt.Sprintf("SELECT distinct(running_application) from clicks where currentdate='%s' and captured_time >= '%s' and captured_time <= '%s'", day, startTime, endTime)
 	rows := genQuery(db, query)
 	daily := []DailyGraph{}
 	for rows.Next() {
@@ -125,7 +127,7 @@ func getUsedProductPerDay(db *sql.DB) *[]DailyGraph {
 			fmt.Println(err)
 			return nil
 		}
-		query := fmt.Sprintf("SELECT count(running_application) from clicks where currentdate='%s' and running_application='%s'", day, values)
+		query := fmt.Sprintf("SELECT count(running_application) from clicks where currentdate='%s' and running_application='%s' and captured_time >= '%s' and captured_time <= '%s'", day, values, startTime, endTime)
 		daily = append(daily, DailyGraph{
 			Product: values,
 			Count:   getProductUsedCount(db, query),
@@ -163,7 +165,9 @@ func getUsedProductPerDays(db *sql.DB) *[]DailyGraph {
 			continue
 		}
 
-		query := fmt.Sprintf("SELECT count(running_application) from clicks where currentdate='%s'", values)
+		startTime := "10:0:0"
+		endTime := "18:0:0"
+		query := fmt.Sprintf("SELECT count(running_application) from clicks where currentdate='%s' and captured_time >='%s' and captured_time <= '%s'", values, startTime, endTime)
 		daily = append(daily, DailyGraph{
 			Count: getProductUsedCount(db, query),
 			Days:  values,
