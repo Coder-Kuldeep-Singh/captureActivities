@@ -15,5 +15,6 @@ func SetupRouter() *gin.Engine {
 
 	router.GET("/office/days", GetDays)
 	router.GET("/office/daily", Daily)
+	router.GET("/full", Report)
 	return router
 }
