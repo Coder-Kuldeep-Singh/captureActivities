@@ -111,11 +111,14 @@ type DailyGraph struct {
 	Days    string
 }
 
+func RunningTime() (string, string) {
+	return "10:0:0", "18:0:0"
+}
+
 func getUsedProductPerDay(db *sql.DB) *[]DailyGraph {
 	t := time.Now()
 	day := fmt.Sprintf("%d-%d-%d", t.Day(), t.Month(), t.Year())
-	startTime := "10:0:0"
-	endTime := "18:0:0"
+	startTime, endTime := RunningTime()
 	query := fmt.Sprintf("SELECT distinct(running_application) from clicks where currentdate='%s' and captured_time >= '%s' and captured_time <= '%s'", day, startTime, endTime)
 	rows := genQuery(db, query)
 	daily := []DailyGraph{}
@@ -165,8 +168,7 @@ func getUsedProductPerDays(db *sql.DB) *[]DailyGraph {
 			continue
 		}
 
-		startTime := "10:0:0"
-		endTime := "18:0:0"
+		startTime, endTime := RunningTime()
 		query := fmt.Sprintf("SELECT count(running_application) from clicks where currentdate='%s' and captured_time >='%s' and captured_time <= '%s'", values, startTime, endTime)
 		daily = append(daily, DailyGraph{
 			Count: getProductUsedCount(db, query),
