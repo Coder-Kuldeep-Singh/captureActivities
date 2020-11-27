@@ -134,8 +134,8 @@ func mailsPrepared(folderName, fileName string) {
 	attachmentFilePath := fmt.Sprintf("./%s/%s", folderName, fileName)
 	filename := fileName
 
-	log.Println("NOTE: user need to turn on 'less secure apps' options")
-	log.Println("URL:  https://myaccount.google.com/lesssecureapps\n\r")
+	// log.Println("NOTE: user need to turn on 'less secure apps' options")
+	// log.Println("URL:  https://myaccount.google.com/lesssecureapps\n\r")
 
 	conn := cred.tlsConnect()
 	defer conn.Close()
@@ -175,6 +175,6 @@ func mailsPrepared(folderName, fileName string) {
 
 	client.Quit()
 	// log.Println(sampleMsg)
-	log.Print("sent :))")
+	// log.Print("sent :))")
 
 }
