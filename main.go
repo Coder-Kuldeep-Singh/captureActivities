@@ -126,17 +126,20 @@ func runContinueslyclicksCapture(db *sql.DB) {
 func generateBarItems(length *[]DailyGraph) []opts.BarData {
 	items := make([]opts.BarData, 0)
 	for _, item := range *length {
-		items = append(items, opts.BarData{Value: item.Count, Name: item.Product})
+		items = append(items, opts.BarData{Value: item.Count, Name: item.Days})
 	}
 	return items
 }
 
-func GetVisual(c *gin.Context) {
-	// c.HTML(http.StatusOK, "index.html", gin.H{
-	// 	"project": "Running",
-	// })
-	// create a new line instance
-	// create a new bar instance
+func GetDays(c *gin.Context) {
+	dbType := "mysql"
+	db := loadEnv().connect(dbType)
+	length := getUsedProductPerDays(db)
+	db.Close()
+	titles := []string{}
+	for _, title := range *length {
+		titles = append(titles, title.Days)
+	}
 	bar := charts.NewBar()
 	// set some global options like Title/Legend/ToolTip or anything else
 	bar.SetGlobalOptions(charts.WithTitleOpts(opts.Title{
@@ -145,8 +148,8 @@ func GetVisual(c *gin.Context) {
 	}))
 
 	// Put data into instance
-	bar.SetXAxis([]string{"Today"})
-	// AddSeries("Category A", generateBarItems())
+	bar.SetXAxis(titles).
+		AddSeries("Category A", generateBarItems(length))
 	// Where the magic happens
 
 	bar.Render(c.Writer)
@@ -156,6 +159,7 @@ func Daily(c *gin.Context) {
 	dbType := "mysql"
 	db := loadEnv().connect(dbType)
 	length := getUsedProductPerDay(db)
+	db.Close()
 	titles := []string{}
 	for _, title := range *length {
 		titles = append(titles, title.Product)
@@ -173,7 +177,6 @@ func Daily(c *gin.Context) {
 	// Where the magic happens
 
 	bar.Render(c.Writer)
-	db.Close()
 }
 
 func main() {
