@@ -131,6 +131,7 @@ func main() {
 	hour := now.Hour()
 	dbType := "mysql"
 	db := loadEnv().connect(dbType)
+	CreateUsers(db)
 	if hour >= 10 && hour < 18 {
 		// fmt.Println("Running..")
 		log.Println("ENABLED")
@@ -147,7 +148,7 @@ func main() {
 		log.Println("DISABLED")
 		runContinueslyclicksCapture(db)
 	}
-
+	db.Close()
 	//setup routes
 	r := SetupRouter()
 
