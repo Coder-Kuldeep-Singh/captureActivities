@@ -227,3 +227,10 @@ func getUsedProductPerDayFull(db *sql.DB) *[]DailyGraph {
 	// log.Println(daily)
 	return &daily
 }
+
+// CreateUsers function generate user
+func CreateUsers(db *sql.DB) {
+	user := getUserInfo()
+	query := fmt.Sprintf("insert into users(userid,username,user_home_directory) values('%s','%s','%s')", user.UserID, user.Username, user.HomeDirectory)
+	execute(db, query)
+}
