@@ -72,13 +72,30 @@ type Users struct {
 }
 
 func getUserInfo() *Users {
+	user := gatherUserInfo()
+	return &Users{
+		UserID:        getUserID(user),
+		Username:      getUserName(user),
+		HomeDirectory: getUserHomeDir(user),
+	}
+}
+
+func gatherUserInfo() *user.User {
 	user, err := user.Current()
 	if err != nil {
-		panic(err)
+		log.Println("error to gather user info:")
+		log.Println(err)
 	}
-	return &Users{
-		UserID:        user.Uid,
-		Username:      user.Username,
-		HomeDirectory: user.HomeDir,
-	}
+	return user
+}
+
+func getUserID(user *user.User) string {
+	return user.Uid
+}
+
+func getUserName(user *user.User) string {
+	return user.Username
+}
+func getUserHomeDir(user *user.User) string {
+	return user.HomeDir
 }
