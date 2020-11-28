@@ -148,11 +148,12 @@ func main() {
 		log.Println("DISABLED")
 		runContinueslyclicksCapture(db)
 	}
-	db.Close()
+
 	//setup routes
 	r := SetupRouter()
 
 	// running
 	r.Run(":8000")
+	db.Close()
 
 }
