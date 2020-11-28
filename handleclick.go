@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os/user"
 	"strings"
 	"time"
 
@@ -63,4 +64,21 @@ func getUsedProduct() string {
 	// log.Println(pid)
 	// log.Println(name)
 	return names[len(names)-1]
+}
+
+// Users handle the list of all users will gonna use tool
+type Users struct {
+	UserID, Username, HomeDirectory string
+}
+
+func getUserInfo() *Users {
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+	return &Users{
+		UserID:        user.Uid,
+		Username:      user.Username,
+		HomeDirectory: user.HomeDir,
+	}
 }
