@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <title>Document</title>
+    <style>
+        .aligned {
+            display: inline-block;
+            width:45%;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<center>
+<div class="container">
+    <div class="aligned">
+        <canvas id="officedailyChart" width="100" height="50"></canvas>
+    </div>
+    <div class="aligned">
+        <canvas id="officedaysChart" width="100" height="50"></canvas>
+    </div>
+
+    <div class="aligned">
+        <canvas id="todayFullChart" width="100" height="50"></canvas>
+    </div>
+    <div class="aligned">
+        <canvas id="daysFullChart" width="100" height="50"></canvas>
+    </div>
+</div>
+</center>
+
+
+
+<script>
+        var ctx = document.getElementById('officedailyChart');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{.officetodaytitles}},
+                datasets: [{
+                    label: "Today's Office Time Analytics",
+                    data: {{.officetodayInfo}},
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+
+
+    var ctx = document.getElementById('officedaysChart');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{.officeDays}},
+            datasets: [{
+                label: "Office Time Days Analytics",
+                data: {{.officeDaysCounts}},
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+
+
+
+
+
+    var ctx = document.getElementById('todayFullChart');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{.todayFullTitle}},
+            datasets: [{
+                label: "Today's Full Time Analytics",
+                data: {{.todayFulCount}},
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+
+    var ctx = document.getElementById('daysFullChart');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{.daysTitle}},
+            datasets: [{
+                label: "Full Time Day's Analytics",
+                data: {{.daysCounts}},
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
