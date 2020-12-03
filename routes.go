@@ -13,8 +13,9 @@ func SetupRouter() *gin.Engine {
 
 	router.LoadHTMLGlob("html/*")
 
-	router.GET("/office/days", GetDays)
-	router.GET("/office/daily", Daily)
-	router.GET("/full", Report)
+	// router.GET("/office/days", GetDays)
+	// router.GET("/office/daily", Daily)
+	// router.GET("/full", Report)
+	router.GET("/user", Userdashboard)
 	return router
 }
